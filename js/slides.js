@@ -84,29 +84,33 @@ document.addEventListener('DOMContentLoaded', () => {
   window.simulateOptionMechanism = (optionType) => {
     const display = document.getElementById('human-ai-sim-display');
     const tabs = document.querySelectorAll('.option-sim-tab');
-    tabs.forEach(t => t.classList.remove('bg-blue-600', 'text-white'));
-    if (event && event.target) event.target.classList.add('bg-blue-600', 'text-white');
+    tabs.forEach(t => {
+      t.className = 'option-sim-tab px-3.5 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+    });
+    if (event && event.target) {
+      event.target.className = 'option-sim-tab px-3.5 py-1.5 rounded-xl font-bold bg-blue-600 text-white transition shadow';
+    }
 
     if (!display) return;
 
     if (optionType === 'optA') {
       display.innerHTML = `
-        <div class="p-4 bg-slate-950/90 rounded-xl border border-amber-500/40 space-y-2">
+        <div class="p-5 bg-blue-50/60 rounded-2xl border-2 border-blue-200 space-y-3">
           <div class="flex items-center justify-between text-xs font-mono">
-            <span class="text-amber-400 font-bold uppercase">Option A: User-Initiated / On-Demand Assistive</span>
-            <span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/30">Quyền Kiểm Soát Cao Nhất (High Agency)</span>
+            <span class="text-blue-800 font-black uppercase text-sm">Option A: User-Initiated / On-Demand Assistive</span>
+            <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-300 font-bold">Quyền Kiểm Soát Cao Nhất (High Agency)</span>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mt-2">
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-slate-400 font-bold block mb-1">👤 User làm gì?</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mt-3">
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-blue-700 font-bold block mb-1 text-sm">👤 User làm gì?</span>
               User tự viết note, khi gặp đoạn khó hiểu thì chủ động bôi đen và nhấn nút <strong>"Giải thích thuật ngữ này"</strong>.
             </div>
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-amber-300 font-bold block mb-1">🤖 AI làm gì?</span>
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-red-600 font-bold block mb-1 text-sm">🤖 AI làm gì?</span>
               AI ở trạng thái bị động (Passive). Chỉ kích hoạt khi có lệnh rõ ràng từ User. Hiện popup giải thích ngắn gọn kèm nguồn.
             </div>
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-rose-300 font-bold block mb-1">⚖️ Trade-off chính</span>
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-slate-800 font-bold block mb-1 text-sm">⚖️ Trade-off chính</span>
               <strong>Ưu điểm:</strong> User không bị phân tâm, 100% kiểm soát.<br>
               <strong>Nhược điểm:</strong> Tốn nhiều thao tác bấm tay, user lười sẽ không dùng.
             </div>
@@ -115,22 +119,22 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else if (optionType === 'optB') {
       display.innerHTML = `
-        <div class="p-4 bg-slate-950/90 rounded-xl border border-emerald-500/40 space-y-2">
+        <div class="p-5 bg-blue-50/60 rounded-2xl border-2 border-blue-200 space-y-3">
           <div class="flex items-center justify-between text-xs font-mono">
-            <span class="text-emerald-400 font-bold uppercase">Option B: User + AI Co-Create (Real-time Inline Ghosting)</span>
-            <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/30">Cộng Tác Song Hành (Balanced Co-Pilot)</span>
+            <span class="text-blue-800 font-black uppercase text-sm">Option B: User + AI Co-Create (Real-time Inline Ghosting)</span>
+            <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-300 font-bold">Cộng Tác Song Hành (Balanced Co-Pilot)</span>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mt-2">
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-slate-400 font-bold block mb-1">👤 User làm gì?</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mt-3">
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-blue-700 font-bold block mb-1 text-sm">👤 User làm gì?</span>
               User gõ bài bình thường. Khi dừng gõ 1.5s, AI hiện gợi ý chữ mờ (Ghost text). User nhấn <kbd>Tab</kbd> để nhận hoặc gõ tiếp để bỏ qua.
             </div>
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-emerald-300 font-bold block mb-1">🤖 AI làm gì?</span>
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-blue-600 font-bold block mb-1 text-sm">🤖 AI làm gì?</span>
               Dự đoán ý tiếp theo dựa trên ngữ cảnh bài giảng hiện tại, tự biến mất ngay khi user gõ ký tự khác (Zero friction).
             </div>
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-rose-300 font-bold block mb-1">⚖️ Trade-off chính</span>
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-slate-800 font-bold block mb-1 text-sm">⚖️ Trade-off chính</span>
               <strong>Ưu điểm:</strong> Tốc độ ghi chép tăng gấp 3 lần, cực kỳ mượt mà.<br>
               <strong>Nhược điểm:</strong> Gợi ý mờ liên tục có thể gây xao nhãng nếu độ chính xác không cao.
             </div>
@@ -139,22 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else {
       display.innerHTML = `
-        <div class="p-4 bg-slate-950/90 rounded-xl border border-purple-500/40 space-y-2">
+        <div class="p-5 bg-red-50/60 rounded-2xl border-2 border-red-200 space-y-3">
           <div class="flex items-center justify-between text-xs font-mono">
-            <span class="text-purple-400 font-bold uppercase">Option C: AI Proactively Generates + Human Reviews / Refines</span>
-            <span class="px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-500/30">Tự Động Hóa Cao (Proactive Agent)</span>
+            <span class="text-red-700 font-black uppercase text-sm">Option C: AI Proactively Generates + Human Reviews / Refines</span>
+            <span class="px-2.5 py-1 rounded-full bg-red-100 text-red-700 border border-red-300 font-bold">Tự Động Hóa Cao (Proactive Agent)</span>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mt-2">
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-slate-400 font-bold block mb-1">👤 User làm gì?</span>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mt-3">
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-blue-700 font-bold block mb-1 text-sm">👤 User làm gì?</span>
               User chỉ cần nghe giảng. Cuối buổi, AI tự tạo sẵn bản tóm tắt có cấu trúc Flashcards. User duyệt lại, sửa lỗi và bấm "Lưu vào Mindmap".
             </div>
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-purple-300 font-bold block mb-1">🤖 AI làm gì?</span>
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-red-600 font-bold block mb-1 text-sm">🤖 AI làm gì?</span>
               Tự động lắng nghe audio, trích xuất key concepts, đánh dấu mức độ tin cậy (Confidence) và tạo bản nháp hoàn chỉnh.
             </div>
-            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              <span class="text-rose-300 font-bold block mb-1">⚖️ Trade-off chính</span>
+            <div class="p-3.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <span class="text-slate-800 font-bold block mb-1 text-sm">⚖️ Trade-off chính</span>
               <strong>Ưu điểm:</strong> Rảnh tay 100%, không lo bỏ sót bài.<br>
               <strong>Nhược điểm:</strong> Rủi ro ảo giác (Hallucination), user ít ghi nhớ kiến thức do không tự tay viết.
             </div>
@@ -186,12 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (explainBox) {
       explainBox.classList.remove('hidden');
       explainBox.innerHTML = `
-        <div class="flex items-start gap-2 text-xs ${isCorrect ? 'text-emerald-300 bg-emerald-950/60 border-emerald-500/40' : 'text-amber-300 bg-amber-950/60 border-amber-500/40'} p-3 rounded-lg border mt-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="flex items-start gap-2 text-xs md:text-sm font-medium ${isCorrect ? 'text-emerald-800 bg-emerald-50 border-emerald-300' : 'text-red-800 bg-red-50 border-red-300'} p-3.5 rounded-xl border mt-3 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0 mt-0.5 ${isCorrect ? 'text-emerald-600' : 'text-red-600'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
           </svg>
           <div>
-            <strong>${isCorrect ? 'Chính xác!' : 'Giải thích chi tiết:'}</strong> ${explainText}
+            <strong class="font-extrabold">${isCorrect ? 'Chính xác!' : 'Giải thích chi tiết:'}</strong> ${explainText}
           </div>
         </div>
       `;
