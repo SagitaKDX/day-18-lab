@@ -1,6 +1,6 @@
 /**
  * timer.js - Countdown Timer Widget for Day 18 Lab
- * Supports task presets (120m sprint, 180m full, Chặng 1-6)
+ * Supports compact display, task presets, and authentic digital alarm sound.
  */
 
 class LabTimer {
@@ -54,8 +54,8 @@ class LabTimer {
     if (this.isRunning) return;
     this.isRunning = true;
     if (this.btnToggle) {
-      this.btnToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg> Tạm Dừng`;
-      this.btnToggle.className = "px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-mono text-xs font-bold transition flex items-center gap-1 shadow";
+      this.btnToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="4" height="16" x="6" y="4"/><rect width="4" height="16" x="14" y="4"/></svg> Tạm Dừng`;
+      this.btnToggle.className = "px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-mono text-xs font-bold transition flex items-center gap-1 shadow-sm";
     }
     if (this.displayElement) {
       this.displayElement.classList.add('timer-running');
@@ -67,7 +67,7 @@ class LabTimer {
         this.updateDisplay();
       } else {
         this.pause();
-        this.playBeep();
+        this.playAlarmSound();
         if (this.statusElement) this.statusElement.innerText = "⏰ Hết giờ!";
       }
     }, 1000);
@@ -77,8 +77,8 @@ class LabTimer {
     this.isRunning = false;
     clearInterval(this.timerInterval);
     if (this.btnToggle) {
-      this.btnToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg> Bắt Đầu`;
-      this.btnToggle.className = "px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition flex items-center gap-1 shadow";
+      this.btnToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg> Bắt Đầu`;
+      this.btnToggle.className = "px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-mono text-xs font-bold transition flex items-center gap-1 shadow-sm";
     }
     if (this.displayElement) {
       this.displayElement.classList.remove('timer-running');
@@ -105,19 +105,43 @@ class LabTimer {
     }
   }
 
-  playBeep() {
+  /**
+   * Authentic Digital Alarm Clock Chime
+   * Plays 4 repeating bursts of sharp digital alarm pulses
+   */
+  playAlarmSound() {
     try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // 880Hz A5
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.8);
-    } catch (e) {}
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const audioCtx = new AudioContext();
+      const now = audioCtx.currentTime;
+
+      // Play 4 burst cycles of 4 rapid digital beeps
+      const playBeepBurst = (startTime) => {
+        for (let i = 0; i < 4; i++) {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.type = 'square'; // Classic digital alarm tone
+          osc.frequency.setValueAtTime(1046.5, startTime + i * 0.1); // C6 Note (Crisp High Pitch)
+
+          gain.gain.setValueAtTime(0.35, startTime + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + i * 0.1 + 0.07);
+
+          osc.start(startTime + i * 0.1);
+          osc.stop(startTime + i * 0.1 + 0.07);
+        }
+      };
+
+      playBeepBurst(now);
+      playBeepBurst(now + 0.65);
+      playBeepBurst(now + 1.3);
+      playBeepBurst(now + 1.95);
+    } catch (e) {
+      console.warn("Alarm audio context error:", e);
+    }
   }
 }
 

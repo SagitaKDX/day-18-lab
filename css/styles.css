@@ -180,13 +180,13 @@ body {
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
 }
 
-/* Custom Timer Widget Styles (Bold Crimson & Royal Blue) */
+/* Custom Timer Widget Styles (Bold Crimson & Compact) */
 .timer-display {
   font-family: 'JetBrains Mono', monospace;
   font-feature-settings: "tnum";
-  letter-spacing: -0.04em;
-  font-size: 1.35rem;
-  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-size: 1.12rem;
+  font-weight: 800;
   color: #dc2626;
 }
 
