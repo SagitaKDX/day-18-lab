@@ -52,17 +52,19 @@
 </head>
 <body class="h-screen w-screen flex flex-col justify-between p-4 md:p-6 text-slate-900 font-sans antialiased select-none relative bg-slate-50">
 
-  <!-- ================= FLOATING PREV / NEXT BUTTONS ================= -->
-  <button id="nav-btn-prev" class="nav-floating-btn nav-btn-prev" title="Slide Trước (←)">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m15 18-6-6 6-6"/>
-    </svg>
-  </button>
-  <button id="nav-btn-next" class="nav-floating-btn nav-btn-next" title="Slide Tiếp Theo (→ hoặc Space)">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m9 18 6-6-6-6"/>
-    </svg>
-  </button>
+  <!-- ================= BOTTOM-RIGHT SLIDE NAVIGATION DOCK ================= -->
+  <div class="nav-dock-container">
+    <button id="nav-btn-prev" class="nav-dock-btn" title="Slide Trước (←)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+    </button>
+    <button id="nav-btn-next" class="nav-dock-btn nav-dock-btn-next" title="Slide Tiếp Theo (→ hoặc Space)">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m9 18 6-6-6-6"/>
+      </svg>
+    </button>
+  </div>
 
   <!-- ================= TOP HEADER (CLEAN: LAB TITLE & TIMER ONLY) ================= -->
   <header class="glass-panel px-6 py-3.5 flex items-center justify-between z-30 mb-3 shrink-0 border-slate-200 shadow-sm">

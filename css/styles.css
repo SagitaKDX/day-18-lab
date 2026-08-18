@@ -127,36 +127,58 @@ body {
   transform: scale(1) translateY(0);
 }
 
-/* Floating Navigation Buttons (Bold Red & Blue Accents) */
-.nav-floating-btn {
+/* Bottom-Right Floating Navigation Dock (Side-by-Side) */
+.nav-dock-container {
   position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 1.5rem;
+  right: 1.75rem;
   z-index: 50;
-  width: 58px;
-  height: 58px;
-  border-radius: 9999px;
-  background: #ffffff;
-  border: 2px solid #cbd5e1;
-  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  padding: 0.45rem 0.55rem;
+  border-radius: 1.25rem;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.15), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.nav-dock-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
 }
 
-.nav-floating-btn:hover {
+.nav-dock-btn:hover {
   background: var(--blue-primary);
   border-color: var(--blue-primary);
   color: #ffffff;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 0 25px rgba(37, 99, 235, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
 }
 
-.nav-btn-prev { left: 1rem; }
-.nav-btn-next { right: 1rem; }
+.nav-dock-btn-next {
+  background: var(--blue-primary);
+  border-color: var(--blue-primary);
+  color: #ffffff;
+}
+
+.nav-dock-btn-next:hover {
+  background: #1e40af;
+  border-color: #1e40af;
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+}
 
 /* Custom Timer Widget Styles (Bold Crimson & Royal Blue) */
 .timer-display {
