@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAB 18 — Multiple Prototypes & Human–AI Design Guide</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              glow: '#3b82f6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="h-screen w-screen flex flex-col justify-between p-4 md:p-6 text-slate-100 font-sans antialiased select-none relative">
+
+  <!-- ================= FLOATING PREV / NEXT BUTTONS ================= -->
+  <button id="nav-btn-prev" class="nav-floating-btn nav-btn-prev" title="Slide Trước (←)">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+  </button>
+  <button id="nav-btn-next" class="nav-floating-btn nav-btn-next" title="Slide Tiếp Theo (→ hoặc Space)">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m9 18 6-6-6-6"/>
+    </svg>
+  </button>
+
+  <!-- ================= TOP HEADER (NAV, TIMER & CONTROLS) ================= -->
+  <header class="glass-panel px-4 py-2.5 flex items-center justify-between z-30 mb-2 shrink-0">
+    <!-- Left: Lab Branding -->
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-8 rounded-xl bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center shadow-glow-purple">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 12h20"/><path d="m5 7-3 5 3 5"/><path d="m19 7 3 5-3 5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400 font-mono">TRACK 1 · DAY 18</span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-600"></span>
+          <span class="text-[10px] text-slate-400 font-medium">VinUni Codelab</span>
+        </div>
+        <h1 class="text-xs md:text-sm font-bold text-white tracking-tight">
+          Multiple Prototypes & Human–AI Design
+        </h1>
+      </div>
+    </div>
+
+    <!-- Center: Lab Timer Widget -->
+    <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
+      <div class="flex items-center gap-1.5 text-amber-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span id="timer-display" class="timer-display text-sm md:text-base font-bold text-white">120:00</span>
+      </div>
+
+      <select id="timer-preset-select" class="bg-slate-950 text-slate-300 text-[10px] font-mono rounded px-1.5 py-1 border border-slate-800 focus:outline-none">
+        <option value="120">Sprint Lớp (120p)</option>
+        <option value="180">Full Lab (180p)</option>
+        <option value="15">Chặng 1: Evidence (15p)</option>
+        <option value="20">Chặng 2: 3 Options (20p)</option>
+        <option value="30">Chặng 3: Human-AI (30p)</option>
+        <option value="55">Chặng 4: Build A/B/C (55p)</option>
+        <option value="45">Chặng 5-6: Test & Synthesis (45p)</option>
+      </select>
+
+      <button id="timer-toggle-btn" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-[10px] font-bold transition shadow flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg> Bắt Đầu
+      </button>
+      <button id="timer-reset-btn" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 transition" title="Đặt lại">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+    </div>
+
+    <!-- Right: Jump Shortcuts & Fullscreen -->
+    <div class="flex items-center gap-2">
+      <div class="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800 text-[10px] font-mono">
+        <button onclick="jumpToSlide(0)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-slate-300">Tổng quan</button>
+        <button onclick="jumpToSlide(2)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-amber-400">G1: Evidence</button>
+        <button onclick="jumpToSlide(3)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-blue-400">G2: 3 Options</button>
+        <button onclick="jumpToSlide(4)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-purple-400">G3: Human-AI</button>
+        <button onclick="jumpToSlide(6)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-emerald-400">G4: Build</button>
+        <button onclick="jumpToSlide(8)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-rose-400">G5: Test</button>
+        <button onclick="jumpToSlide(11)" class="px-1.5 py-0.5 rounded hover:bg-slate-800 text-cyan-400">5 Gates</button>
+      </div>
+
+      <div class="text-xs font-mono text-slate-400 px-2.5 py-1 bg-slate-900/80 rounded-xl border border-slate-800 font-medium">
+        Slide <span id="current-slide-num" class="text-purple-400 font-bold">1</span> / <span id="total-slide-num">15</span>
+      </div>
+      <button id="btn-fullscreen" class="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition" title="Toàn Màn Hình (F)">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN SLIDES CONTAINER ================= -->
+  <main class="slide-container">
+
+    <!-- ================= SLIDE 0: TITLE & HERO ================= -->
+    <div class="slide-view active flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto relative">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="pill-badge bg-purple-500/20 text-purple-300 border border-purple-400/30">
+              ⚡ Track 1 · Day 18
+            </span>
+            <span class="pill-badge bg-blue-500/20 text-blue-300 border border-blue-400/30">
+              👥 Nhóm 3 Người · Nộp Cá Nhân
+            </span>
+            <span class="pill-badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+              ⏱️ 120–180 Phút
+            </span>
+          </div>
+          <span class="font-mono text-xs text-slate-400">Case: VLearn (AI Tutor / Notes / Radar)</span>
+        </div>
+
+        <div class="space-y-2">
+          <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
+            DAY 18: Multiple Prototypes — <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-300 to-blue-400">Human–AI Design</span>
+          </h2>
+          <p class="text-sm md:text-base text-slate-300 leading-relaxed">
+            Nhóm tiếp tục đúng Hypothesis Problem từ Day 17. Nhiệm vụ hôm nay không phải tìm problem mới, mà là <strong>mở rộng solution space</strong>: thiết kế 3 Solution Options (A / B / C) với sự phân chia quyền lực User–AI khác nhau, build 3 micro-prototype và test chéo với 3 tester ngoài nhóm.
+          </p>
+        </div>
+
+        <!-- 3 Core Outputs Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="glass-card p-3.5 border-purple-500/30 bg-purple-950/20">
+            <span class="text-[10px] font-mono font-bold text-purple-400 uppercase bg-purple-950 px-2 py-0.5 rounded">Đầu Ra 1</span>
+            <h4 class="font-bold text-white text-sm mt-1.5">Three-Option Design Sheet</h4>
+            <p class="text-xs text-slate-400 mt-1">3 cách giải khác nhau về cơ chế & quyền quyết định cho cùng 1 Problem & Task.</p>
+          </div>
+
+          <div class="glass-card p-3.5 border-blue-500/30 bg-blue-950/20">
+            <span class="text-[10px] font-mono font-bold text-blue-400 uppercase bg-blue-950 px-2 py-0.5 rounded">Đầu Ra 2</span>
+            <h4 class="font-bold text-white text-sm mt-1.5">3 Human–AI Micro-Prototypes</h4>
+            <p class="text-xs text-slate-400 mt-1">Mỗi thành viên phụ trách chính 1 option (A/B/C) dùng chung 70% bối cảnh & style.</p>
+          </div>
+
+          <div class="glass-card p-3.5 border-emerald-500/30 bg-emerald-950/20">
+            <span class="text-[10px] font-mono font-bold text-emerald-400 uppercase bg-emerald-950 px-2 py-0.5 rounded">Đầu Ra 3</span>
+            <h4 class="font-bold text-white text-sm mt-1.5">3 Feedback Notes ➔ 1 Next Change</h4>
+            <p class="text-xs text-slate-400 mt-1">Mỗi người test cả bộ A/B/C với 1 tester ngoài nhóm và tổng hợp thành 1 hướng đi tiếp.</p>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between text-xs text-slate-300">
+          <span>💡 <strong>Tinh thần cốt lõi:</strong> Bài không chấm điểm prototype đẹp hay option nào thắng, mà chấm <strong>khả năng học hỏi từ hành vi và trade-off của user</strong>!</span>
+          <span class="font-mono text-purple-400 font-bold">Dùng phím [→] để tiếp tục</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 1: THE BIG PICTURE FLOW ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-purple-400">Dòng Chảy Khái Niệm</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Từ Evidence Day 17 Đến Next Change Day 18</h2>
+          </div>
+          <span class="pill-badge bg-purple-500/20 text-purple-300 border border-purple-400/30 font-mono">Concept Flow</span>
+        </div>
+
+        <!-- Flow Visual -->
+        <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3 font-mono text-xs">
+          <div class="grid grid-cols-1 md:grid-cols-7 gap-2 items-center text-center">
+            <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-slate-300">
+              <div class="text-[10px] text-slate-500">BƯỚC 1</div>
+              <strong class="text-amber-400">Day 17 Evidence</strong>
+              <div class="text-[9px] text-slate-400 mt-0.5">3 Practice Notes</div>
+            </div>
+            <div class="text-slate-600 font-bold">➔</div>
+            <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-slate-300">
+              <div class="text-[10px] text-slate-500">BƯỚC 2</div>
+              <strong class="text-amber-400">Hypothesis Problem</strong>
+              <div class="text-[9px] text-slate-400 mt-0.5">1 Vấn đề duy nhất</div>
+            </div>
+            <div class="text-slate-600 font-bold">➔</div>
+            <div class="p-2.5 bg-blue-950/60 rounded-xl border border-blue-500/40 text-slate-300">
+              <div class="text-[10px] text-blue-400">BƯỚC 3</div>
+              <strong class="text-blue-300">3 Solution Options</strong>
+              <div class="text-[9px] text-slate-400 mt-0.5">Option A / B / C</div>
+            </div>
+            <div class="text-slate-600 font-bold">➔</div>
+            <div class="p-2.5 bg-purple-950/60 rounded-xl border border-purple-500/40 text-slate-300">
+              <div class="text-[10px] text-purple-400">BƯỚC 4</div>
+              <strong class="text-purple-300">Human–AI Design</strong>
+              <div class="text-[9px] text-slate-400 mt-0.5">4 Trụ cột kiểm soát</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-center text-center pt-2 border-t border-slate-800">
+            <div class="p-2.5 bg-purple-950/60 rounded-xl border border-purple-500/40 text-slate-300">
+              <div class="text-[10px] text-purple-400">BƯỚC 5</div>
+              <strong class="text-purple-300">3 Micro-Prototypes</strong>
+              <div class="text-[9px] text-slate-400 mt-0.5">3 Thành viên build</div>
+            </div>
+            <div class="text-slate-600 font-bold">➔</div>
+            <div class="p-2.5 bg-emerald-950/60 rounded-xl border border-emerald-500/40 text-slate-300">
+              <div class="text-[10px] text-emerald-400">BƯỚC 6</div>
+              <strong class="text-emerald-300">3 Testers × A/B/C</strong>
+              <div class="text-[9px] text-slate-400 mt-0.5">Mỗi người test cả 3</div>
+            </div>
+            <div class="text-slate-600 font-bold">➔</div>
+            <div class="p-2.5 bg-emerald-900/60 rounded-xl border border-emerald-400 text-white">
+              <div class="text-[10px] text-emerald-300">KẾT QUẢ</div>
+              <strong class="text-emerald-200">1 Group Next Change</strong>
+              <div class="text-[9px] text-slate-300 mt-0.5">Still Unproven</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7 Golden Rules -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="glass-card p-3 border-slate-800 space-y-1">
+            <strong class="text-amber-400">1. Giữ 1 Problem duy nhất:</strong>
+            <p class="text-slate-400 text-[11px]">A/B/C bắt buộc phải giải quyết cùng 1 problem cho cùng 1 user và situation.</p>
+          </div>
+          <div class="glass-card p-3 border-slate-800 space-y-1">
+            <strong class="text-blue-400">2. Khác cơ chế, không chỉ khác UI:</strong>
+            <p class="text-slate-400 text-[11px]">Chỉ đổi màu, đổi layout hay từ ngữ không tạo thành 3 options có ý nghĩa.</p>
+          </div>
+          <div class="glass-card p-3 border-slate-800 space-y-1">
+            <strong class="text-emerald-400">3. Không tuyên bố validated:</strong>
+            <p class="text-slate-400 text-[11px]">3 feedback đầu tiên chỉ giúp chọn iteration tiếp theo, chưa đủ để chứng minh giá trị thị trường.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 2: PHASE 1 - EVIDENCE & PROBLEM ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-amber-500/20 text-amber-400 font-mono font-bold text-sm border border-amber-500/30">Chặng 1 · 15 Phút</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Tổng Hợp Evidence & Chốt Hypothesis Problem</h2>
+              <p class="text-xs text-slate-400">Đặt 3 Practice Notes cạnh nhau ➔ Tách bạch Lời Nói vs Diễn Giải</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-blue-500/20 text-blue-300 border border-blue-400/30 font-mono font-bold">GATE 1 Checkpoint</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Evidence Table -->
+          <div class="glass-card p-4 border-amber-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Evidence Huddle (Đặt 3 Note cạnh nhau)
+            </h4>
+            <div class="code-block text-[11px] text-slate-300 space-y-1.5">
+              <div class="text-amber-400 font-bold pb-1 border-b border-slate-800">Cần trả lời 4 câu hỏi trong 15 phút:</div>
+              <div>1. Có tình huống (situation) hay cách lách (workaround) nào lặp lại?</div>
+              <div>2. Evidence nào mâu thuẫn hoặc làm nhóm bất ngờ nhất?</div>
+              <div>3. Điều gì thực sự là lời user, điều gì là nhóm tự suy đoán?</div>
+              <div>4. Problem nào đủ sắc nét để làm điểm xuất phát hôm nay?</div>
+            </div>
+          </div>
+
+          <!-- Problem Formula -->
+          <div class="glass-card p-4 border-amber-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-amber-400">Công Thức Chốt Hypothesis Problem Chuẩn:</h4>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] leading-relaxed text-slate-200">
+              "Khi <span class="text-amber-400 font-bold">[situation]</span>, <span class="text-blue-400 font-bold">[user]</span> gặp khó khăn trong việc <span class="text-emerald-400 font-bold">[job]</span> vì <span class="text-purple-400 font-bold">[barrier]</span>, dẫn đến <span class="text-rose-400 font-bold">[consequence]</span>."
+            </div>
+            <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-[10px] text-slate-400 space-y-1">
+              <div><strong>Bắt buộc ghi rõ:</strong></div>
+              <div>• Evidence ban đầu từ Day 17 hỗ trợ giả thuyết này là gì?</div>
+              <div>• Điều gì quan trọng mà nhóm vẫn CHƯA BIẾT (Still Unproven)?</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gate 1 Card -->
+        <div class="gate-card p-3 rounded-xl border border-blue-500/40 flex items-center justify-between text-xs">
+          <div class="space-y-0.5">
+            <span class="font-mono text-blue-400 font-bold uppercase text-[10px]">Tiêu Chí Vượt Gate 1: Evidence Continuity</span>
+            <p class="text-slate-300">Hypothesis Problem có đủ 5 thành tố (user, situation, job, barrier, consequence) + có dấu vết observation từ Day 17.</p>
+          </div>
+          <span class="badge-pass px-2.5 py-1 rounded font-mono text-xs">GATE 1 PASS ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 3: PHASE 2 - 3 SOLUTION OPTIONS ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-blue-500/20 text-blue-400 font-mono font-bold text-sm border border-blue-500/30">Chặng 2 · 20 Phút</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Chọn Ba Solution Options (A / B / C) & Distance Check</h2>
+              <p class="text-xs text-slate-400">Mở Solution Parking Lot ➔ Chọn 3 cơ chế giải quyết khác nhau</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-blue-500/20 text-blue-300 border border-blue-400/30 font-mono font-bold">GATE 2 Checkpoint</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Constant vs Variable -->
+          <div class="glass-card p-4 border-blue-500/30 space-y-2">
+            <div class="flex justify-between items-center text-blue-400 font-mono font-bold">
+              <span>Quy Tắc Thử Nghiệm Khoa Học</span>
+              <span class="text-emerald-400">Comparison Contract</span>
+            </div>
+            <div class="space-y-1.5 text-[11px]">
+              <div class="p-2 bg-slate-950 rounded border border-slate-800">
+                <span class="text-emerald-400 font-bold block mb-0.5">🔒 BẮT BUỘC GIỮ NGUYÊN (Constants):</span>
+                Target user, Situation, Task cần làm, Desired outcome, Dữ liệu mẫu (Data fixture).
+              </div>
+              <div class="p-2 bg-slate-950 rounded border border-slate-800">
+                <span class="text-blue-400 font-bold block mb-0.5">🔀 ĐƯỢC PHÉP KHÁC NHAU (Variables):</span>
+                Solution mechanism, User làm gì vs AI làm gì, Điểm kích hoạt (Trigger), Trade-off chính.
+              </div>
+            </div>
+          </div>
+
+          <!-- Distance Check -->
+          <div class="glass-card p-4 border-blue-500/30 space-y-2">
+            <div class="flex justify-between items-center text-blue-400 font-mono font-bold">
+              <span>Distance Check (Kiểm Tra Khoảng Cách)</span>
+              <span class="text-amber-400">Không nhắc màu / layout</span>
+            </div>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] space-y-1.5 text-slate-300 font-mono">
+              <div>• <strong>A khác B vì:</strong> [Cơ chế chia việc User–AI khác nhau ở...]</div>
+              <div>• <strong>B khác C vì:</strong> [Mức độ chủ động của AI và quyền kiểm soát...]</div>
+              <div>• <strong>A khác C vì:</strong> [Sự đánh đổi giữa tốc độ rảnh tay vs quyền tự quyết...]</div>
+            </div>
+            <p class="text-[10px] text-slate-400">
+              ⚠️ Tuyệt đối không làm một option tệ giả tạo chỉ để tôn hai option còn lại lên.
+            </p>
+          </div>
+        </div>
+
+        <!-- Gate 2 Card -->
+        <div class="gate-card p-3 rounded-xl border border-blue-500/40 flex items-center justify-between text-xs">
+          <div class="space-y-0.5">
+            <span class="font-mono text-blue-400 font-bold uppercase text-[10px]">Tiêu Chí Vượt Gate 2: Meaningful Options</span>
+            <p class="text-slate-300">3 options cùng giải một problem và task nhưng khác nhau có ý nghĩa về cơ chế chia việc giữa User và AI.</p>
+          </div>
+          <span class="badge-pass px-2.5 py-1 rounded font-mono text-xs">GATE 2 PASS ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 4: PHASE 3 - HUMAN-AI DESIGN ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-400 font-mono font-bold text-sm border border-purple-500/30">Chặng 3 · 30 Phút</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Human–AI Design Pass (4 Trụ Cột Thiết Kế)</h2>
+              <p class="text-xs text-slate-400">Chốt tương tác tại khoảnh khắc quyết định (Critical Interaction Moment)</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-purple-500/20 text-purple-300 border border-purple-400/30 font-mono font-bold">GATE 3 Checkpoint</span>
+        </div>
+
+        <!-- 4 Pillars Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+          <div class="glass-card p-3.5 border-purple-500/30 space-y-1.5">
+            <span class="font-mono text-purple-400 font-bold text-[10px]">1. EXPECTATION</span>
+            <h5 class="font-bold text-white">Kỳ Vọng & Năng Lực</h5>
+            <p class="text-slate-300 text-[11px]">Trước khi AI chạy, user có hiểu AI sắp làm gì không? Giới hạn nào cần nói rõ?</p>
+          </div>
+
+          <div class="glass-card p-3.5 border-purple-500/30 space-y-1.5">
+            <span class="font-mono text-purple-400 font-bold text-[10px]">2. ROLE & AGENCY</span>
+            <h5 class="font-bold text-white">Act / Ask / Don't Act</h5>
+            <p class="text-slate-300 text-[11px]">AI tự làm hay hỏi trước? Nếu AI làm sai, user mất gì và sai có dễ phát hiện không?</p>
+          </div>
+
+          <div class="glass-card p-3.5 border-purple-500/30 space-y-1.5">
+            <span class="font-mono text-purple-400 font-bold text-[10px]">3. EVIDENCE & UNCERTAINTY</span>
+            <h5 class="font-bold text-white">Bằng Chứng & Độ Không Chắc</h5>
+            <p class="text-slate-300 text-[11px]">User biết AI dựa vào dữ liệu nào? Khi không chắc, AI thể hiện mức độ tin cậy ra sao?</p>
+          </div>
+
+          <div class="glass-card p-3.5 border-purple-500/30 space-y-1.5">
+            <span class="font-mono text-purple-400 font-bold text-[10px]">4. CONTROL & RECOVERY</span>
+            <h5 class="font-bold text-white">Kiểm Soát & Khôi Phục</h5>
+            <p class="text-slate-300 text-[11px]">User sửa, từ chối, Undo ở đâu? Sau khi AI sai, user tiếp tục task bằng đường nào?</p>
+          </div>
+        </div>
+
+        <!-- Gate 3 Card -->
+        <div class="gate-card p-3 rounded-xl border border-purple-500/40 flex items-center justify-between text-xs">
+          <div class="space-y-0.5">
+            <span class="font-mono text-purple-400 font-bold uppercase text-[10px]">Tiêu Chí Vượt Gate 3: Human Control</span>
+            <p class="text-slate-300">Mỗi option có mức agency phù hợp với hậu quả khi sai, và user luôn có một đường kiểm soát hoặc khôi phục.</p>
+          </div>
+          <span class="badge-pass px-2.5 py-1 rounded font-mono text-xs">GATE 3 PASS ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 5: INTERACTIVE HUMAN-AI SIMULATOR ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-purple-400">Trình Mô Phỏng Tương Tác</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Thử Nghiệm Phổ Phân Quyền User vs AI (Case VLearn)</h2>
+          </div>
+          <span class="pill-badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">Interactive Spectrum</span>
+        </div>
+
+        <!-- Simulator Tabs & Display -->
+        <div class="glass-card p-4 border-purple-500/30 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono text-purple-300 font-bold flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 8 4 4-4 4"/><path d="M2 12h20"/><path d="m6 8-4 4 4 4"/></svg>
+              Bấm Tab Để Xem Chi Tiết Từng Cơ Chế Phân Quyền:
+            </span>
+            <div class="flex gap-1.5 font-mono text-xs">
+              <button onclick="simulateOptionMechanism('optA')" class="option-sim-tab px-3 py-1 rounded-lg font-bold bg-blue-600 text-white transition">Option A (User-Led)</button>
+              <button onclick="simulateOptionMechanism('optB')" class="option-sim-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Option B (Co-Create)</button>
+              <button onclick="simulateOptionMechanism('optC')" class="option-sim-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Option C (Proactive Agent)</button>
+            </div>
+          </div>
+
+          <div id="human-ai-sim-display">
+            <div class="p-4 bg-slate-950/90 rounded-xl border border-amber-500/40 space-y-2">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="text-amber-400 font-bold uppercase">Option A: User-Initiated / On-Demand Assistive</span>
+                <span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/30">Quyền Kiểm Soát Cao Nhất (High Agency)</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mt-2">
+                <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                  <span class="text-slate-400 font-bold block mb-1">👤 User làm gì?</span>
+                  User tự viết note, khi gặp đoạn khó hiểu thì chủ động bôi đen và nhấn nút <strong>"Giải thích thuật ngữ này"</strong>.
+                </div>
+                <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                  <span class="text-amber-300 font-bold block mb-1">🤖 AI làm gì?</span>
+                  AI ở trạng thái bị động (Passive). Chỉ kích hoạt khi có lệnh rõ ràng từ User. Hiện popup giải thích ngắn gọn kèm nguồn.
+                </div>
+                <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                  <span class="text-rose-300 font-bold block mb-1">⚖️ Trade-off chính</span>
+                  <strong>Ưu điểm:</strong> User không bị phân tâm, 100% kiểm soát.<br>
+                  <strong>Nhược điểm:</strong> Tốn nhiều thao tác bấm tay, user lười sẽ không dùng.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+          <span>💡 <strong>Bài học rút ra:</strong> Không có cơ chế nào hoàn hảo 100%, mỗi cơ chế đều có <strong>sự đánh đổi (Trade-off)</strong> giữa tính tự động và quyền kiểm soát!</span>
+          <span class="font-mono text-purple-400 font-bold">Trade-off Awareness ⚖️</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 6: PHASE 4 - BUILD 3 PROTOTYPES ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-400 font-mono font-bold text-sm border border-emerald-500/30">Chặng 4 · 55 Phút</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Build Ba Micro-Prototypes (Tối Thiểu & Đủ Test)</h2>
+              <p class="text-xs text-slate-400">Mỗi thành viên chịu trách nhiệm 1 option · Dùng chung 70% bối cảnh & style</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono font-bold">GATE 4 Checkpoint</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Scope rule -->
+          <div class="glass-card p-4 border-emerald-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              Cấu Trúc 3 Màn Hình Chuẩn
+            </h4>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[11px] space-y-1.5 text-slate-300">
+              <div class="text-blue-400 font-bold">1. COMMON CONTEXT (70% chung):</div>
+              <div class="text-slate-400 pl-2">Màn hình bối cảnh ban đầu, dữ liệu bài học mẫu, kiểu nút bấm chung.</div>
+              <div class="text-purple-400 font-bold">2. CRITICAL INTERACTION (30% khác):</div>
+              <div class="text-slate-400 pl-2">Khoảnh khắc AI can thiệp (bấm nút / hiện ghost text / tự tạo card).</div>
+              <div class="text-emerald-400 font-bold">3. RESULT & USER DECISION:</div>
+              <div class="text-slate-400 pl-2">Nơi user duyệt, sửa lỗi, hoàn tác (undo) hoặc nhận kết quả.</div>
+            </div>
+          </div>
+
+          <!-- Definition of Testable -->
+          <div class="glass-card p-4 border-emerald-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-emerald-400">Definition of Test-Ready (Khi Nào Sẵn Sàng Test?):</h4>
+            <div class="space-y-1.5 text-[11px] text-slate-300">
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                ✓ Tester có thể tự mở link và thao tác cả 3 option A/B/C.
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                ✓ Không cần người build phải ngồi bên cạnh giải thích "chỗ này là...".
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                ✓ Nội dung dữ liệu đủ thật để tester ra quyết định tự nhiên.
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800">
+                ✓ Luôn có nút <strong>Reset</strong> để quay lại bối cảnh ban đầu.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gate 4 Card -->
+        <div class="gate-card p-3 rounded-xl border border-emerald-500/40 flex items-center justify-between text-xs">
+          <div class="space-y-0.5">
+            <span class="font-mono text-emerald-400 font-bold uppercase text-[10px]">Tiêu Chí Vượt Gate 4: Test-Ready</span>
+            <p class="text-slate-300">Một người không build có thể tự thực hiện cùng một task qua A/B/C mà không cần hướng dẫn.</p>
+          </div>
+          <span class="badge-pass px-2.5 py-1 rounded font-mono text-xs">GATE 4 PASS ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 7: PHASE 5 - TEST PREPARATION ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-amber-500/20 text-amber-400 font-mono font-bold text-sm border border-amber-500/30">Chặng 5 · 15 Phút</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Chuẩn Bị Kịch Bản & Luật Vàng Facilitation</h2>
+              <p class="text-xs text-slate-400">Chốt 1 Context Question + 1 Outcome Task + 5 Điểm Quan Sát</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-amber-500/20 text-amber-300 border border-amber-400/30 font-mono">Test Script</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Test Prompt -->
+          <div class="glass-card p-4 border-amber-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-amber-400">1. Kịch Bản Giao Nhiệm Vụ (Test Prompt)</h4>
+            <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 text-[11px] space-y-1.5 text-slate-300">
+              <div>
+                <strong>Câu hỏi bối cảnh (< 2 phút):</strong><br>
+                <em>"Gần đây bạn có từng gặp khó khăn khi ghi chú bài giảng AI dài không?"</em>
+              </div>
+              <div>
+                <strong>Outcome Task (Giao kết quả, không chỉ nút bấm):</strong><br>
+                <em>"Trong tình huống này, hãy dùng từng phương án để ghi lại và tóm tắt ý chính của bài giảng."</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- Facilitation Golden Rules -->
+          <div class="glass-card p-4 border-amber-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-emerald-400">2. 6 Luật Vàng Khi Điều Phối (Facilitation)</h4>
+            <div class="space-y-1 text-[11px] text-slate-300">
+              <div>1. <strong>Tester tự cầm chuột/máy:</strong> Tuyệt đối không bấm hộ.</div>
+              <div>2. <strong>Không giải thích icon/tính năng:</strong> Để tester tự hiểu.</div>
+              <div>3. <strong>Không lấp khoảng im lặng:</strong> Để tester có thời gian nghĩ.</div>
+              <div>4. <strong>Không hỏi:</strong> "Bạn có thấy thích tính năng này không?".</div>
+              <div class="p-1.5 bg-purple-950/60 rounded border border-purple-500/30 text-purple-300">
+                ⭐ <strong>Câu hỏi thần thánh:</strong> Khi tester hỏi "Nó làm gì thế?", hãy hỏi lại: <em>"Theo bạn, nó nên hoạt động như thế nào?"</em>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs flex justify-between items-center text-slate-300">
+          <span>🆘 <strong>3 Câu cứu hộ khi tester bị kẹt:</strong> "Bạn cứ nói to suy nghĩ nhé" · "Bạn sẽ làm gì tiếp theo?" · "Điều gì làm bạn do dự?"</span>
+          <span class="font-mono text-amber-400 font-bold">Think Aloud 🗣️</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 8: PHASE 6 - TEST WITH 3 USERS ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-rose-500/20 text-rose-400 font-mono font-bold text-sm border border-rose-500/30">Chặng 6 · 20 Phút</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Test Với Ba Người & Ghi Chép 4 Lớp Feedback</h2>
+              <p class="text-xs text-slate-400">Mỗi thành viên test cả A/B/C với 1 người ngoài nhóm ➔ 3 Feedback Notes</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-rose-500/20 text-rose-300 border border-rose-400/30 font-mono">3 Testers × A/B/C</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- 4 Layers of Notes -->
+          <div class="glass-card p-4 border-rose-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-rose-400">Cấu Trúc 4 Lớp Của Feedback Note</h4>
+            <div class="space-y-1.5 font-mono text-[11px]">
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800 text-slate-300">
+                <span class="text-blue-400 font-bold">1. OBSERVED:</span> Tester đã thực sự làm gì, nói gì, dừng lại ở đâu?
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800 text-slate-300">
+                <span class="text-purple-400 font-bold">2. INTERPRETED:</span> Nhóm suy đoán hành vi đó có ý nghĩa gì?
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800 text-slate-300">
+                <span class="text-emerald-400 font-bold">3. DECIDED (Next Change):</span> Nhóm sẽ sửa, bỏ hoặc kết hợp gì?
+              </div>
+              <div class="p-1.5 bg-slate-950 rounded border border-slate-800 text-slate-300">
+                <span class="text-amber-400 font-bold">4. STILL UNPROVEN:</span> Điều gì vẫn chưa thể kết luận từ 1 tester?
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Questions -->
+          <div class="glass-card p-4 border-rose-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-blue-400">Bộ Câu Hỏi Phỏng Vấn So Sánh Cuối Phiên</h4>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-[11px] space-y-2 text-slate-300">
+              <div>
+                <strong>1. Chọn phương án:</strong><br>
+                <em>"Trong 3 cách A, B, C bạn vừa thử, bạn thấy cách nào phù hợp với bạn nhất? Vì sao?"</em>
+              </div>
+              <div>
+                <strong>2. Phân chia quyền lực:</strong><br>
+                <em>"Bạn muốn tự tay làm phần nào và muốn giao cho AI làm phần nào?"</em>
+              </div>
+              <div>
+                <strong>3. Trade-off & Điểm khó chịu:</strong><br>
+                <em>"Điều gì ở phương án bạn vừa chọn khiến bạn vẫn cảm thấy chưa thoải mái?"</em>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-xs flex justify-between items-center text-slate-300">
+          <span>⚠️ <strong>Lưu ý:</strong> Người làm Option A vẫn phải mang cả bộ A/B/C đi test. Không được chỉ test option mình làm!</span>
+          <span class="font-mono text-rose-400 font-bold">Test All 3 Options 🔄</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 9: GROUP SYNTHESIS & NEXT CHANGE ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-400 font-mono font-bold text-sm border border-emerald-500/30">Tổng Hợp Nhóm</span>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold text-white">Group Feedback Synthesis — Chốt 1 Next Change</h2>
+              <p class="text-xs text-slate-400">Đặt 3 Feedback Notes cạnh nhau ➔ Tìm Pattern chung & Ra quyết định</p>
+            </div>
+          </div>
+          <span class="pill-badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono font-bold">GATE 5 Checkpoint</span>
+        </div>
+
+        <!-- Synthesis Table -->
+        <div class="glass-card overflow-hidden border border-slate-800 text-xs">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-slate-300 font-bold border-b border-slate-800 text-[11px]">
+                <th class="p-2">Nội Dung</th>
+                <th class="p-2">Tester 1</th>
+                <th class="p-2">Tester 2</th>
+                <th class="p-2">Tester 3</th>
+                <th class="p-2 text-emerald-400">Pattern / Khác Biệt</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-slate-300 text-[11px]">
+              <tr>
+                <td class="p-2 font-bold text-slate-400">First Action</td>
+                <td class="p-2">Bấm nghe audio</td>
+                <td class="p-2">Gõ note thử</td>
+                <td class="p-2">Tìm nút tóm tắt</td>
+                <td class="p-2 text-emerald-300">2/3 tìm cách tự động trước</td>
+              </tr>
+              <tr>
+                <td class="p-2 font-bold text-slate-400">Breakdown</td>
+                <td class="p-2">Không thấy nút Undo</td>
+                <td class="p-2">Ghost text hiện nhanh quá</td>
+                <td class="p-2">Sợ AI tóm tắt sai</td>
+                <td class="p-2 text-rose-300">Thiếu chỉ báo mức độ tin cậy</td>
+              </tr>
+              <tr>
+                <td class="p-2 font-bold text-slate-400">Option Chọn</td>
+                <td class="p-2 text-blue-400 font-bold">Option B</td>
+                <td class="p-2 text-blue-400 font-bold">Option B</td>
+                <td class="p-2 text-purple-400 font-bold">Option C</td>
+                <td class="p-2 text-emerald-300">Thiên hướng Co-create (B)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Next Change Decision Box -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="glass-card p-3 border-emerald-500/30 space-y-1">
+            <span class="text-emerald-400 font-bold block">1 Next Change Chốt:</span>
+            <p class="text-slate-300 text-[11px]">Giữ Option B làm khung chính, nhưng bổ sung tính năng duyệt tóm tắt của C vào cuối buổi.</p>
+          </div>
+          <div class="glass-card p-3 border-emerald-500/30 space-y-1">
+            <span class="text-emerald-400 font-bold block">Evidence Dẫn Tới Quyết Định:</span>
+            <p class="text-slate-300 text-[11px]">Cả 3 tester đều muốn tự kiểm soát ý chính khi nghe giảng nhưng lười làm flashcards thủ công.</p>
+          </div>
+          <div class="glass-card p-3 border-amber-500/30 space-y-1">
+            <span class="text-amber-400 font-bold block">Still Unproven:</span>
+            <p class="text-slate-300 text-[11px]">Chưa chứng minh được liệu user có duy trì việc xem lại flashcards sau 7 ngày hay không.</p>
+          </div>
+        </div>
+
+        <!-- Gate 5 Card -->
+        <div class="gate-card p-3 rounded-xl border border-emerald-500/40 flex items-center justify-between text-xs">
+          <div class="space-y-0.5">
+            <span class="font-mono text-emerald-400 font-bold uppercase text-[10px]">Tiêu Chí Vượt Gate 5: Learning, Not Praise</span>
+            <p class="text-slate-300">Nhóm có 3 Feedback Notes độc lập, chỉ ra pattern hành vi và chốt 1 Next Change cùng điều chưa chứng minh.</p>
+          </div>
+          <span class="badge-pass px-2.5 py-1 rounded font-mono text-xs">GATE 5 PASS ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 10: AI LOG & ETHICS ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-purple-400">Đạo Đức & Khai Báo</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Quy Tắc Dùng AI & Mẫu AI Support Log</h2>
+          </div>
+          <span class="pill-badge bg-purple-500/20 text-purple-300 border border-purple-400/30 font-mono">AI Transparency</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Do & Don't -->
+          <div class="glass-card p-4 border-slate-800 space-y-2">
+            <h4 class="font-bold text-white text-sm">Quy Định Sử Dụng AI Trong Bài Lab:</h4>
+            <div class="space-y-1.5 text-[11px]">
+              <div class="p-2 bg-emerald-950/40 rounded border border-emerald-500/30 text-emerald-300">
+                ✅ <strong>ĐƯỢC DÙNG:</strong> Gợi ý cơ chế tương tác, sinh dữ liệu mẫu (canned output), viết code prototype, tìm câu hỏi dẫn dắt.
+              </div>
+              <div class="p-2 bg-rose-950/40 rounded border border-rose-500/30 text-rose-300">
+                ❌ <strong>TUYỆT ĐỐI CẤM:</strong> Tự sinh quote, observation hoặc feedback tester giả; làm đẹp feedback tiêu cực; chọn option thay tester.
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Support Log Template -->
+          <div class="glass-card p-4 border-purple-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm text-purple-400">Mẫu AI Support Log Cá Nhân (3 Câu Hỏi Bắt Buộc)</h4>
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-[11px] space-y-2 text-slate-300">
+              <div>
+                <span class="text-emerald-400 font-bold">1. AI đã giúp tôi ở đâu?</span><br>
+                <em>"Gợi ý cấu trúc Human–AI decision table và sinh 10 câu trích dẫn bài giảng mẫu."</em>
+              </div>
+              <div>
+                <span class="text-rose-400 font-bold">2. AI sai, hời hợt hoặc làm các option giống nhau ở đâu?</span><br>
+                <em>"AI ban đầu tạo 3 option chỉ khác mỗi màu nút và wording mà không đổi cơ chế."</em>
+              </div>
+              <div>
+                <span class="text-blue-400 font-bold">3. Tôi đã tự sửa hoặc quyết định lại điều gì?</span><br>
+                <em>"Tự tách Option A thành On-demand và Option B thành Ghost-text inline."</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 11: 5 GATES ASSESSMENT ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-blue-400">Đánh Giá & Chấm Điểm</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Năm Gate Đánh Giá Chất Lượng Lab Day 18</h2>
+          </div>
+          <span class="pill-badge bg-blue-500/20 text-blue-300 border border-blue-400/30 font-mono">5 Gates Rubric</span>
+        </div>
+
+        <div class="glass-card overflow-hidden border border-slate-800 text-xs">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-slate-300 font-bold border-b border-slate-800 text-[11px]">
+                <th class="p-2.5">Gate</th>
+                <th class="p-2.5">Tiêu Chuẩn ĐẠT</th>
+                <th class="p-2.5 text-rose-400">Dấu Hiệu CHƯA ĐẠT</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-slate-300 text-[11px]">
+              <tr>
+                <td class="p-2.5 font-bold text-amber-400">1. Evidence Continuity</td>
+                <td class="p-2.5">Hypothesis Problem nối được với observation Day 17 & nêu điều chưa biết</td>
+                <td class="p-2.5 text-rose-300">Chỉ kể lại ý tưởng; coi Practice Notes là validation</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-blue-400">2. Meaningful Options</td>
+                <td class="p-2.5">A/B/C cùng problem/task nhưng khác cơ chế chia việc User–AI</td>
+                <td class="p-2.5 text-rose-300">Ba option chỉ khác màu, layout hoặc từ ngữ</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-purple-400">3. Human Control</td>
+                <td class="p-2.5">Nói rõ expectation, agency, evidence và đường recovery cho user</td>
+                <td class="p-2.5 text-rose-300">AI tự làm nhưng user không hiểu, không sửa hoặc không dừng được</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-emerald-400">4. Test-Ready</td>
+                <td class="p-2.5">Tester ngoài nhóm tự dùng được cả A/B/C cho cùng một task</td>
+                <td class="p-2.5 text-rose-300">Phải giải thích hộ; 1 option xịn hơn hẳn 2 option còn lại</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-bold text-cyan-400">5. Learning</td>
+                <td class="p-2.5">Có 3 Feedback Notes, chỉ ra pattern, chốt 1 Next Change & Still Unproven</td>
+                <td class="p-2.5 text-rose-300">Chỉ đếm "tester thích B" hoặc tuyên bố solution đã validated</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 12: SUBMISSION CHECKLIST ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Nộp Bài Cá Nhân</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Cấu Trúc Repository & Checklist Nộp Bài</h2>
+          </div>
+          <span class="pill-badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">Submission Repo</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Repo Structure -->
+          <div class="glass-card p-4 border-emerald-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm font-mono text-emerald-400">Track1_Day18_MHV_HoVaTen/</h4>
+            <div class="code-block text-[11px] text-slate-300 space-y-1 font-mono">
+              ├── README.md (6 mục bắt buộc)<br>
+              ├── three-option-design-sheet.md (hoặc link board)<br>
+              ├── prototype-link.md (Link A/B/C)<br>
+              ├── prototype-feedback-note.md (Phiên bạn test)<br>
+              ├── group-feedback-synthesis.md (Tổng hợp chung)<br>
+              └── ai-support-log.md (Khai báo cá nhân)
+            </div>
+          </div>
+
+          <!-- README Requirements -->
+          <div class="glass-card p-4 border-emerald-500/30 space-y-2">
+            <h4 class="font-bold text-white text-sm">6 Mục Bắt Buộc Trong README.md:</h4>
+            <div class="space-y-1 text-[11px] text-slate-300">
+              <div>1. Thông tin cá nhân, mã học viên, tên nhóm, case study.</div>
+              <div>2. Hypothesis Problem nhóm đã chốt từ Day 17.</div>
+              <div>3. Tóm tắt 3 Solution Options (A/B/C) và link prototype.</div>
+              <div class="text-emerald-300 font-bold">4. Đóng góp của tôi: Bạn chịu trách nhiệm chính option nào?</div>
+              <div>5. Observation phiên test của bạn + Group Next Change.</div>
+              <div>6. AI Support Log phản ánh trung thực.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 13: 10 COMMON ANTI-PATTERNS ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-rose-400">Bẫy Thường Gặp</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">10 Bẫy Sai Lầm Lớn Nhất Cần Tránh</h2>
+          </div>
+          <span class="pill-badge bg-rose-500/20 text-rose-300 border border-rose-400/30 font-mono">Anti-Patterns</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">1. Đổi task giữa 3 options:</span>
+            <p class="text-slate-400 text-[11px]">Đổi task khiến A/B/C không còn chung hệ quy chiếu để so sánh.</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">2. Chỉ đổi màu / layout:</span>
+            <p class="text-slate-400 text-[11px]">Không tạo ra sự khác biệt về cơ chế và quyền quyết định User–AI.</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">3. Chỉ test option mình làm:</span>
+            <p class="text-slate-400 text-[11px]">Mỗi tester bắt buộc phải trải nghiệm cả bộ 3 option A, B, C.</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">4. AI tự động quá đà:</span>
+            <p class="text-slate-400 text-[11px]">Cho AI tự hành động mà không tính đến hậu quả khi AI đoán sai.</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">5. Build full product:</span>
+            <p class="text-slate-400 text-[11px]">Chỉ cần build 2–3 màn hình quanh 1 critical interaction duy nhất.</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">6. Giải thích hộ tester:</span>
+            <p class="text-slate-400 text-[11px]">Ngồi kể tính năng thay vì để tester tự bấm và tự vấp.</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">7. Chỉ ghi "Tester thích B":</span>
+            <p class="text-slate-400 text-[11px]">Thiếu hành vi quan sát, lý do đằng sau và sự đánh đổi (trade-off).</p>
+          </div>
+          <div class="glass-card p-3 border-rose-500/20 space-y-1">
+            <span class="text-rose-400 font-bold">8. Tuyên bố validated sớm:</span>
+            <p class="text-slate-400 text-[11px]">3 feedback chỉ dùng để định hướng iteration tiếp theo, chưa phải validation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SLIDE 14: CHECKPOINT QUIZ ================= -->
+    <div class="slide-view flex-col justify-center">
+      <div class="glass-panel p-6 md:p-8 w-full flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400">Knowledge Checkpoint</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Mini Quiz — Kiểm Tra Nhanh Kiến Thức Day 18</h2>
+          </div>
+          <span class="pill-badge bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">4 Câu Hỏi Tương Tác</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <!-- Quiz 1 -->
+          <div class="glass-card p-4 border-slate-800 flex flex-col justify-between" id="quiz-card-0">
+            <div>
+              <span class="font-mono text-[10px] font-bold text-amber-400 bg-amber-950 px-2 py-0.5 rounded border border-amber-500/30">CÂU HỎI 1</span>
+              <p class="font-bold text-white mt-1.5 text-sm">Điều gì bắt buộc phải giữ nguyên giữa 3 phương án A, B, C trong bài lab?</p>
+              
+              <div class="quiz-options-list">
+                <div class="quiz-option" onclick="checkQuizAnswer(0, 0, true, 'Để so sánh khoa học, target user, situation, task, desired outcome và data fixture bắt buộc phải giống nhau 100%.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-amber-400 font-mono font-bold shrink-0 text-xs">A</span>
+                  <span>Cùng target user, situation, task, desired outcome và dữ liệu mẫu.</span>
+                </div>
+                <div class="quiz-option" onclick="checkQuizAnswer(0, 1, false, 'Cơ chế can thiệp và mức độ chủ động của AI bắt buộc phải khác nhau.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400 font-mono font-bold shrink-0 text-xs">B</span>
+                  <span>Cùng mức độ can thiệp tự động của AI.</span>
+                </div>
+              </div>
+            </div>
+            <div id="quiz-explain-0" class="hidden"></div>
+          </div>
+
+          <!-- Quiz 2 -->
+          <div class="glass-card p-4 border-slate-800 flex flex-col justify-between" id="quiz-card-1">
+            <div>
+              <span class="font-mono text-[10px] font-bold text-purple-400 bg-purple-950 px-2 py-0.5 rounded border border-purple-500/30">CÂU HỎI 2</span>
+              <p class="font-bold text-white mt-1.5 text-sm">Khi tester đang dùng prototype và hỏi 'Nút này có tác dụng gì?', bạn nên xử lý ra sao?</p>
+              
+              <div class="quiz-options-list">
+                <div class="quiz-option" onclick="checkQuizAnswer(1, 0, false, 'Giải thích hộ sẽ làm mất đi cơ hội quan sát sự hiểu sai tự nhiên của user.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400 font-mono font-bold shrink-0 text-xs">A</span>
+                  <span>Giải thích ngay cách hoạt động để tester đỡ mất thời gian.</span>
+                </div>
+                <div class="quiz-option" onclick="checkQuizAnswer(1, 1, true, 'Hỏi ngược lại giúp khám phá mental model thực sự của user thay vì dạy họ cách dùng.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-purple-400 font-mono font-bold shrink-0 text-xs">B</span>
+                  <span>Hỏi lại: 'Theo bạn, nút này nên hoạt động như thế nào?'.</span>
+                </div>
+              </div>
+            </div>
+            <div id="quiz-explain-1" class="hidden"></div>
+          </div>
+
+          <!-- Quiz 3 -->
+          <div class="glass-card p-4 border-slate-800 flex flex-col justify-between" id="quiz-card-2">
+            <div>
+              <span class="font-mono text-[10px] font-bold text-blue-400 bg-blue-950 px-2 py-0.5 rounded border border-blue-500/30">CÂU HỎI 3</span>
+              <p class="font-bold text-white mt-1.5 text-sm">Mỗi micro-prototype cần xây dựng bao nhiêu màn hình để sẵn sàng test?</p>
+              
+              <div class="quiz-options-list">
+                <div class="quiz-option" onclick="checkQuizAnswer(2, 0, true, 'Chỉ cần Common Context ➔ Critical Interaction ➔ Result/Decision quanh khoảnh khắc quyết định.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-blue-400 font-mono font-bold shrink-0 text-xs">A</span>
+                  <span>2–3 trạng thái quanh một Critical Interaction duy nhất.</span>
+                </div>
+                <div class="quiz-option" onclick="checkQuizAnswer(2, 1, false, 'Build full product là lãng phí thời gian và làm loãng mục tiêu test.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400 font-mono font-bold shrink-0 text-xs">B</span>
+                  <span>Toàn bộ sản phẩm hoàn chỉnh từ Onboarding đến Cài đặt.</span>
+                </div>
+              </div>
+            </div>
+            <div id="quiz-explain-2" class="hidden"></div>
+          </div>
+
+          <!-- Quiz 4 -->
+          <div class="glass-card p-4 border-slate-800 flex flex-col justify-between" id="quiz-card-3">
+            <div>
+              <span class="font-mono text-[10px] font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/30">CÂU HỎI 4</span>
+              <p class="font-bold text-white mt-1.5 text-sm">Sau khi thu thập đủ 3 Feedback Notes từ 3 tester, kết luận nào sau đây là ĐÚNG CHUẨN?</p>
+              
+              <div class="quiz-options-list">
+                <div class="quiz-option" onclick="checkQuizAnswer(3, 0, false, '3 feedback không đủ ý nghĩa thống kê để tuyên bố validation thị trường.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400 font-mono font-bold shrink-0 text-xs">A</span>
+                  <span>'Giải pháp B đã được chứng minh và validated thành công với thị trường.'</span>
+                </div>
+                <div class="quiz-option" onclick="checkQuizAnswer(3, 1, true, 'Chỉ chốt hướng đi tiếp theo (Next Change) và chỉ ra điều vẫn chưa được chứng minh.')">
+                  <span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-emerald-400 font-mono font-bold shrink-0 text-xs">B</span>
+                  <span>'Tester chọn B vì trade-off X, nên iteration tiếp theo nhóm sẽ cải tiến Y; điều Z vẫn chưa được chứng minh.'</span>
+                </div>
+              </div>
+            </div>
+            <div id="quiz-explain-3" class="hidden"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/slides.js"></script>
+</body>
+</html>
