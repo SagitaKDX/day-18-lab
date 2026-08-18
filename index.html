@@ -64,70 +64,63 @@
     </svg>
   </button>
 
-  <!-- ================= TOP HEADER (NAV, TIMER & CONTROLS) ================= -->
-  <header class="glass-panel px-5 py-3 flex items-center justify-between z-30 mb-2 shrink-0 border-slate-200">
-    <!-- Left: Lab Branding (White-Blue-Red Theme) -->
+  <!-- ================= TOP HEADER (CLEAN: LAB TITLE & TIMER ONLY) ================= -->
+  <header class="glass-panel px-6 py-3.5 flex items-center justify-between z-30 mb-3 shrink-0 border-slate-200 shadow-sm">
+    <!-- Left: Lab Title & Badge -->
     <div class="flex items-center gap-3.5">
-      <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-700 via-blue-600 to-red-600 flex items-center justify-center shadow-glow-blue">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <div class="h-11 w-11 rounded-2xl bg-gradient-to-tr from-blue-700 via-blue-600 to-red-600 flex items-center justify-center shadow-glow-blue shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2v20"/><path d="m17 5-5-3-5 3"/><path d="m17 19-5 3-5-3"/><path d="M2 12h20"/><path d="m5 7-3 5 3 5"/><path d="m19 7 3 5-3 5"/>
         </svg>
       </div>
       <div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-black uppercase tracking-wider text-red-600 font-mono bg-red-50 px-2 py-0.5 rounded border border-red-200">TRACK 1 · DAY 18</span>
-          <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-          <span class="text-xs text-blue-700 font-bold">VinUni Codelab</span>
+        <div class="flex items-center gap-2 mb-0.5">
+          <span class="text-xs font-black uppercase tracking-wider text-red-600 font-mono bg-red-50 px-2.5 py-0.5 rounded-md border border-red-200 whitespace-nowrap">TRACK 1 · DAY 18</span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+          <span class="text-xs text-blue-700 font-bold whitespace-nowrap">VinUni Codelab</span>
         </div>
-        <h1 class="text-sm md:text-base font-extrabold text-slate-900 tracking-tight">
+        <h1 class="text-base md:text-lg font-extrabold text-slate-900 tracking-tight whitespace-nowrap">
           Multiple Prototypes & Human–AI Design
         </h1>
       </div>
     </div>
 
-    <!-- Center: Lab Timer Widget -->
-    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border-2 border-slate-200 shadow-sm">
-      <div class="flex items-center gap-2 text-red-600">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-        </svg>
-        <span id="timer-display" class="timer-display text-lg md:text-xl font-black text-red-600">120:00</span>
+    <!-- Right: Lab Timer Widget & Slide Counter -->
+    <div class="flex items-center gap-3.5">
+      <!-- Timer Widget -->
+      <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-2xl border-2 border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2 text-red-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span id="timer-display" class="timer-display text-lg md:text-xl font-black text-red-600 whitespace-nowrap">120:00</span>
+        </div>
+
+        <select id="timer-preset-select" class="bg-slate-50 text-slate-800 text-xs font-mono font-bold rounded-lg px-2.5 py-1.5 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+          <option value="120">Sprint Lớp (120p)</option>
+          <option value="180">Full Lab (180p)</option>
+          <option value="15">Chặng 1: Evidence (15p)</option>
+          <option value="20">Chặng 2: 3 Options (20p)</option>
+          <option value="30">Chặng 3: Human-AI (30p)</option>
+          <option value="55">Chặng 4: Build A/B/C (55p)</option>
+          <option value="45">Chặng 5-6: Test & Synthesis (45p)</option>
+        </select>
+
+        <button id="timer-toggle-btn" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono text-xs font-extrabold transition shadow-md flex items-center gap-1.5 whitespace-nowrap">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg> Bắt Đầu
+        </button>
+        <button id="timer-reset-btn" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Đặt lại">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </button>
       </div>
 
-      <select id="timer-preset-select" class="bg-slate-100 text-slate-800 text-xs font-mono font-bold rounded-lg px-2 py-1.5 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="120">Sprint Lớp (120p)</option>
-        <option value="180">Full Lab (180p)</option>
-        <option value="15">Chặng 1: Evidence (15p)</option>
-        <option value="20">Chặng 2: 3 Options (20p)</option>
-        <option value="30">Chặng 3: Human-AI (30p)</option>
-        <option value="55">Chặng 4: Build A/B/C (55p)</option>
-        <option value="45">Chặng 5-6: Test & Synthesis (45p)</option>
-      </select>
-
-      <button id="timer-toggle-btn" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-mono text-xs font-extrabold transition shadow-md flex items-center gap-1.5">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg> Bắt Đầu
-      </button>
-      <button id="timer-reset-btn" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition" title="Đặt lại">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-      </button>
-    </div>
-
-    <!-- Right: Jump Shortcuts & Fullscreen -->
-    <div class="flex items-center gap-2.5">
-      <div class="hidden lg:flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-mono font-bold">
-        <button onclick="jumpToSlide(0)" class="px-2 py-1 rounded-lg hover:bg-white text-slate-700">Tổng quan</button>
-        <button onclick="jumpToSlide(2)" class="px-2 py-1 rounded-lg hover:bg-white text-blue-700">G1: Evidence</button>
-        <button onclick="jumpToSlide(3)" class="px-2 py-1 rounded-lg hover:bg-white text-blue-700">G2: 3 Options</button>
-        <button onclick="jumpToSlide(4)" class="px-2 py-1 rounded-lg hover:bg-white text-red-600">G3: Human-AI</button>
-        <button onclick="jumpToSlide(6)" class="px-2 py-1 rounded-lg hover:bg-white text-blue-700">G4: Build</button>
-        <button onclick="jumpToSlide(8)" class="px-2 py-1 rounded-lg hover:bg-white text-red-600">G5: Test</button>
-        <button onclick="jumpToSlide(11)" class="px-2 py-1 rounded-lg hover:bg-white text-red-600">5 Gates</button>
-      </div>
-
-      <div class="text-xs font-mono text-slate-700 px-3 py-1.5 bg-white rounded-xl border border-slate-200 font-black shadow-sm">
+      <!-- Slide Counter -->
+      <div class="whitespace-nowrap font-mono text-slate-700 px-4 py-2 bg-white rounded-2xl border-2 border-slate-200 font-black shadow-sm text-xs md:text-sm">
         Slide <span id="current-slide-num" class="text-blue-700 font-extrabold">1</span> / <span id="total-slide-num">15</span>
       </div>
-      <button id="btn-fullscreen" class="p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 transition shadow-sm" title="Toàn Màn Hình (F)">
+
+      <!-- Fullscreen Button -->
+      <button id="btn-fullscreen" class="p-2.5 rounded-2xl bg-white hover:bg-slate-100 border-2 border-slate-200 text-slate-700 transition shadow-sm" title="Toàn Màn Hình (F)">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
         </svg>
